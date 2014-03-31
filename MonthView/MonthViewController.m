@@ -7,8 +7,10 @@
 //
 
 #import "MonthViewController.h"
+#import "MonthView.h"
 
 @interface MonthViewController ()
+@property (weak, nonatomic) IBOutlet MonthView *monthView;
 
 @end
 
@@ -18,6 +20,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    self.monthView.month = 3;
+    self.monthView.year = 2014;
 }
 
 - (void)didReceiveMemoryWarning
