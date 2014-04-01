@@ -11,6 +11,7 @@
 //
 // http://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
 // Tomohiko Sakamoto
+// Returns 0 => sunday, 1 => monday, ..., 6 => saturday
 //
 static int dow(int y, int m, int d)
 {
@@ -120,6 +121,22 @@ static int numDaysInMonth(int y, int m) {
     }
     
     //
+    // Draw background 7x6 grid to holds month days.
+    //
+    CGContextSetRGBStrokeColor(context, 0, 0, 0, 1);
+    CGContextSetLineWidth(context, 0.5);
+    for (int r = 1; r < 8; r++) {
+        CGContextMoveToPoint(context, 0, r*100);
+        CGContextAddLineToPoint(context, 700, r*100);
+        CGContextStrokePath(context);
+    }
+    for (int c = 0; c < 8; c++) {
+        CGContextMoveToPoint(context, c*100, 100);
+        CGContextAddLineToPoint(context, c*100, 700);
+        CGContextStrokePath(context);
+    }
+    
+    //
     // Draw numbers and boxes for days of current month.
     //
     NSDictionary *attributes = @{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:30],
@@ -144,6 +161,57 @@ static int numDaysInMonth(int y, int m) {
             c++;
         }
     }
+    
+    //
+    // Pick light attributes to be used for drawing days of previous
+    // and next month.
+    //
+    NSDictionary *lightAttributes = @{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:30],
+                                       NSForegroundColorAttributeName: [UIColor grayColor] };
+    //
+    // Draw days of previous month.
+    //
+    const int previousMonth = self.month == 1 ? 12 : self.month - 1;
+    const int previousMonthYear = previousMonth == 12 ? self.year - 1 : self.year;
+    const int numberOfDaysInPreviousMonth = numDaysInMonth(previousMonthYear, previousMonth);
+    if (startDayOfWeek > 0) {
+        const int n = startDayOfWeek - 1;
+        int day = numberOfDaysInPreviousMonth - n;
+        for (int c = 0; c <= n; c++) {
+            const CGRect monthRect = CGRectMake(c*100, 100, 100, 100);
+            NSString *dayStr = [NSString stringWithFormat:@"%d", day];
+            const CGSize dsize = [dayStr sizeWithAttributes:lightAttributes];
+            const CGRect drect = CGRectMake(monthRect.origin.x + (50 - dsize.width)/2,
+                                            monthRect.origin.y + (50 - dsize.height)/2,
+                                            dsize.width, dsize.height);
+            [dayStr drawInRect:drect withAttributes:lightAttributes];
+            day++;
+        }
+    }
+    
+    //
+    // Draw days of next month.
+    //
+    const int daysCovered = daysInMonth + startDayOfWeek;
+    const int daysLeft = 7*6 - daysCovered;
+    c = daysCovered % 7;
+    r = daysCovered / 7 + 1;
+    for (int day = 1; day <= daysLeft; day++) {
+        const CGRect monthRect = CGRectMake(c*100, r*100, 100, 100);
+        NSString *dayStr = [NSString stringWithFormat:@"%d", day];
+        const CGSize dsize = [dayStr sizeWithAttributes:lightAttributes];
+        const CGRect drect = CGRectMake(monthRect.origin.x + (50 - dsize.width)/2,
+                                        monthRect.origin.y + (50 - dsize.height)/2,
+                                        dsize.width, dsize.height);
+        [dayStr drawInRect:drect withAttributes:lightAttributes];
+        if (c == 6) {
+            c = 0;
+            r++;
+        } else {
+            c++;
+        }
+    }
+    
     
     CGContextRestoreGState(context);
 }
