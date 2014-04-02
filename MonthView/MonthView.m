@@ -110,9 +110,11 @@ static int numDaysInMonth(int y, int m) {
     // Draw days of week.
     //
     NSDictionary *dowAttributes = @{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:28],
-                                            NSForegroundColorAttributeName: [UIColor blackColor]};
+                                            NSForegroundColorAttributeName: [UIColor whiteColor]};
     NSArray *dowStrings = @[@"Sun", @"Mon", @"Tue", @"Wed", @"Thu", @"Fri", @"Sat"];
     for (int c = 0; c < 7; c++) {
+        [[UIColor blueColor] setFill];
+        CGContextFillRect(context, CGRectMake(c*100, 50, 100, 50));
         NSString *dow = [dowStrings objectAtIndex:c];
         const CGSize dowSize = [dow sizeWithAttributes:dowAttributes];
         const CGRect dowRect = CGRectMake(c*100 + (100 - dowSize.width)/2, 50 + (50 - dowSize.height),
