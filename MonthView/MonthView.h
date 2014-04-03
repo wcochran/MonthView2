@@ -12,5 +12,6 @@
 
 @property (assign, nonatomic) NSInteger month; // jan = 1, .., dec = 12
 @property (assign, nonatomic) NSInteger year;  // >= 1800 (Gregorian)
+@property (assign, nonatomic) BOOL drawAdjacentMonthDays;
 
 @end
